@@ -1,0 +1,48 @@
+WRONG! fixed in python
+
+Una sezione-acritica-unificante(SAU) è una sequenza di istruzioni che può essere eseguita contemporaneamente da più processi, ma i processi possono uscirne solo quanto tutti i processi che stanno eseguendo la SAU ne completano l'esecuzione. Ogni processo chiama:   
+    SAU_enter()
+        ... codice SAU
+    SAU_exit()
+Scrivere le funzioni SAU_enter e SAU_exit mediante l'uso di semafori.
+
+class SAU:
+    def __init__(self):
+        self.readytoleave = Queue(-1)
+        self.n = 0
+        self.blocked = Queue(-1)
+        self.open = true
+        self.mutex = semaphore(1)
+    
+    def enter():
+        mutex.P()
+        if !self.open:
+            block_sem = semaphore(1)
+            self.blocked.append(block_sem)
+            mutex.V()
+            block_sem.P()
+            self.blocked.pop().V()
+        # Entra nella sezione e salva il processo
+        self.n += 1
+        mutex.V()
+        
+    def exit():
+        mutex.P()
+        if self.readytoleave().size() == self.n - 1:
+            self.readytoleave.pop().V()
+        else:
+            inside_sem = semaphore(1)
+            self.readytoleave.append(inside_sem)
+            if self.open:
+                self.open = false
+            mutex.V()
+            inside_sem.P() 
+            self.n -= 1
+            if self.readytoleave.empty():
+                self.open = true
+                self.blocked.pop().V()
+                mutex.V()
+            else:
+                self.readytoleave.pop().V()
+
+

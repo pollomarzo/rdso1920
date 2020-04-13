@@ -1,0 +1,19 @@
+Definiamo col nome di semaforo monobinario un semaforo che può assumere solamente i valori zero e uno. Come un semaforo binario ordinario, una operazione monoP quando il semaforo ha valore zero deve bloccare il processo chiamante, altrimenti porta il valore del semaforo da 1 a 0. Quando il valore del semaforo è zero, una operazione monoV sblocca il primo processo bloccato, se ve ne sono, altrimenti porta il valore da 0 a 1. Una operazione monoV su un semaforo monobinario che ha valore 1 non produce alcun effetto. Scrivere il monitor monobinarysem che implementi i metodi monoP e monoV.
+
+class monobinarysem(monitor):
+    def __init__(self, val):
+        self.iszero = condition(self)
+        self.val = val
+        
+    @entry
+    def monoP(self):
+        if self.val == 0:
+            self.iszero.wait()
+        
+        self.val -= 1
+        
+    @entry
+    def monoV(self):
+        if self.val == 0:
+            self.val += 1
+            self.iszero.signal()

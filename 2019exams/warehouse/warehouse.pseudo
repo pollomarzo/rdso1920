@@ -1,0 +1,57 @@
+Una fabbrica usa 16 tipi di componenti (es. ruota telaio scocca sellino catena ....). Ogni volta che occorre costruire un prodotto occorre prendere dal magazzino le parti necessarie, e.g. per fare un go-kart occorre una scocca e 4 ruote, per fare una bicicletta un telaio, un sellino, 2 ruote e una catena.
+Scopo dell'esercizio è di scrivere un monitor storage per la gestione del magazzino (un vettore di 16 interi). Ogni volta che un magazziere riceve un carico di componenti dai fornitori chiama la funzione:     
+    storage.add(components)
+dove components è un vettore di 16 elementi, indica quanti componenti di ogni tipo vengono aggiunti al magazzino. 
+Quando un operaio deve costruire un prodotto chiama:     
+    storage.get(components)
+dove components è un vettore di 16 elementi: indica quanti componenti di ogni tipo sono necessari per costruire il prodotto richiesto. Ovviamente se manca qualche componente occorre aspettare che i magazzinieri ricevano e mettano nel magazzino le parti mancanti. Le richieste degli operai devono essere soddisfatte in ordine FIFO. Ci possono essere casi di Deadlock? e di Starvation? perché? 
+deadlock no, la add non aspetta nulla quindi impossibile due processi dipendano da l'un l'altro per avverarsi di condizione
+starvation forse, ma solo a livello dello scheduler. il monitor non causa starvation.
+
+monitor warehouse:
+    int storage[16]
+    queue amountneeded[16]
+    condition needparts[16]
+    
+    @entry
+    void add(components[16]):
+        for i, amount in enumerate(components):
+            storage[i] += amount
+        
+        for i, comp_queue in enumerate(amountneeded):
+            // comp_queue.top() ritorna il numero di pezzi del 
+            // componente i necessari al primo processo arrivato
+            while (comp_queue.isEmpty()):
+                if (storage[i] >= comp_queue.top()):
+                    needparts[i].signal()
+                else:
+                    break
+
+    
+    @entry
+    void get(needed[16]):
+        for i, amount in enumerate(needed):
+            if (amount > 0):
+                amountneeded[i].enqueue(amount)
+                
+        for i in 0..15:
+            if (amount > 0):
+                amount = needed[i]
+                if (storage[i] < amount):
+                    needparts[i].wait()
+                    amountneeded[i].dequeue()
+                    storage[i] -= amount
+
+storage = {0, 1, 1}
+an = {{}, {}, {}}
+np = {{}, {}, {}}
+urgent = {}
+
+a = {2, 3, 4}
+b = {3, 1, 0}
+c = {5, 5, 5}
+
+0: voglio voglio metto
+1: voglio metto voglio
+2: metto voglio metto
+

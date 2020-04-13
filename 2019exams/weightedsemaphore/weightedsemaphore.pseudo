@@ -1,0 +1,86 @@
+Un semaforo pesato è una struttura di sincronizzazione con due primitive P(w) e V(w) (oltre al costruttore di inizializzazione). I parametri delle operazioni P e V sono i pesi dell'operazione. L'invariante dei semafori pesati richiede che la somma dei pesi delle operazioni P completate sia sempre inferiore o uguale alla somma dei pesi delle operazioni V completate più il valore di inizializzazione. Scrivere il monitor wsem in grado di implementare un semaforo pesato fair: i processi che si bloccano a causa di una P che invaliderebbe l'invariante devono essere riattivati nell'ordine in cui sono stati sospesi (FIFO).
+APPUNTO IN BASSO!
+
+class wsem(monitor):
+    def __init__(self, initial_weight):
+        super().__init__()
+        # invariant: sum(P(w)) - sum(V(w)) >= initial_weight
+        self.weight = initial_weight
+        self.inside_weights = []
+        self.invariant = condition(self)
+
+    @entry
+    def P(self, w):
+        self.inside_weights.append(w)
+        if self.weight - w < 0:
+            print(f"{threading.current_thread().getName()} blocked entering")
+            self.invariant.wait()
+
+        self.weight -= self.inside_weights.pop(0)
+        if self.inside_weights != [] and self.weight - self.inside_weights[0] >= 0:
+            self.invariant.signal()
+        else:
+            print(f"{threading.current_thread().getName()} did not pass baton")
+
+    @entry
+    def V(self, w):
+        self.weight += w
+        if self.inside_weights != [] and self.weight - self.inside_weights[0] >= 0:
+            self.invariant.signal()
+        else:
+            print(f"{threading.current_thread().getName()} did not pass baton")
+
+
+appunto in mezzo all'output:
+    in corrispondenza della freccia, process2 viene saltato, perché il monitor ha valore 2, process2 richiede 3, e process3 richiede 2. è la situazione corretta? così c'è "starvation" dei costosi, ma allo stesso modo se li gestissimo perfettamente FIFO ci sarebbe starvation di tutti i processi successivi a uno molto costoso. qual è il comportamento giusto??
+Weights: [(1, 3), (1, 3), (3, 2), (2, 3), (3, 1), (1, 3), (2, 2), (2, 1), (1, 1), (1, 2)]
+process0 does P
+process0 did not pass baton
+process1 does P
+process1 did not pass baton
+process2 does P
+process2 blocked entering
+process4 does P
+process3 does P
+process4 blocked entering
+process5 does P
+process6 does P
+process7 does P
+process8 does P
+process9 does P
+process3 did not pass baton
+process5 blocked entering
+process6 blocked entering
+process7 blocked entering
+process8 blocked entering
+process9 blocked entering
+process0 leaving
+process0 did not pass baton
+process1 leaving
+process0 done V
+process4 did not pass baton
+process1 done V
+process3 leaving <------------------------------------------------------------
+process6 did not pass baton
+process3 done V
+process5 leaving
+process8 did not pass baton
+process5 done V
+process4 leaving
+process9 did not pass baton
+process4 done V
+process8 leaving
+process8 did not pass baton
+process8 done V
+process2 leaving
+process2 did not pass baton
+process2 done V
+process6 leaving
+process6 did not pass baton
+process6 done V
+process7 leaving
+process7 did not pass baton
+process7 done V
+process9 leaving
+process9 did not pass baton
+process9 done V

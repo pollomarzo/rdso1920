@@ -1,0 +1,65 @@
+{r1, r2, r3, r4, w1, w2, w3, w4}
+same_number.queue = {r3, r4, w1, w2, w3}
+buffer = {2, 3, 4}
+urgent = {w4, r1, r2}
+r1=1, r2=2, r3=, r4=
+
+monitor unlimited_buffer:
+    int nw = 0, nr = 0;
+    queue buffer;
+    condition same_number;
+    
+    entry void put(T x):
+        nw++;
+        buffer.enqueue(x);
+        
+        if nw != nr:
+            same_number.wait();
+            
+        same_number.signal();
+        nw--;
+        
+    entry T get(void):
+        nr++;
+        if nw != nr: 
+            same_number.wait();
+        else:
+            same_number.signal();
+        
+        T val = buffer.dequeue();
+
+    same_number.signal();
+
+    nr--;
+
+    return val;
+
+
+monitor unlimited_buffer:
+    int nw = 0, nr = 0;
+    stack buffer;
+    condition same_number;
+    
+    entry void put(T x):
+        nw++;
+        buffer.enqueue(x);
+        
+        if nw != nr:
+            same_number.wait();
+            
+        same_number.signal();
+        nw--;
+        
+    entry T get(void):
+        if nw == nr + 1:
+            T val = buffer.prendidalfondo();
+        else:
+            nr++;
+            same_number.wait();
+            T val = buffer.prendidacima();
+
+    same_number.signal();
+
+    nr--;
+
+    return val;
