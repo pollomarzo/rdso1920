@@ -49,11 +49,12 @@ class allornone(monitor):
             self.readers.wait()
         val = self.data
         print(f"{threading.current_thread().getName()} read {val}")
-        if self.nr == 1:
+        self.nr -= 1
+        if self.nr == 0:
             self.writers.signal()
         else:
             self.readers.signal()
-        self.nr -= 1
+        
         print(f"{threading.current_thread().getName()} exit get")
         return val
 
@@ -69,9 +70,9 @@ def reader(wr):
 
 
 if __name__ == "__main__":
-    # order = ["w", "r"] * 5
-    # random.shuffle(order)
-    order = ['w', 'r', 'r', 'w', 'w', 'w', 'w', 'r', 'r', 'r']
+    order = ["w", "r"] * 5
+    random.shuffle(order)
+    # order = ['w', 'r', 'r', 'w', 'w', 'w', 'w', 'r', 'r', 'r']
     print(f"Order: {order}")
     wr = allornone()
     threads = []
