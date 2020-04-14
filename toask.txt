@@ -1,0 +1,24 @@
+2019.07.15:
+    fatto c1,c2,g1(check),g2
+
+2019.06.18:
+    c1 l'ha solo matti
+    fatto c2,g2
+    CHIEDERE g1
+
+2019.05.18:
+    c1(check), 
+    CHIEDERE c1, PROPORRE c2, CHIEDERE g1
+
+2019.02.14:
+    fatto c1
+    CHIEDERE c2, g1 (definizione sequenza di esecuzione)
+    CHIEDERE g2(d)
+
+2019.01.15:
+    fatto c1
+    c2 DA FARE
+    CHIEDERE g1
+    confermare g2(d)
+
+

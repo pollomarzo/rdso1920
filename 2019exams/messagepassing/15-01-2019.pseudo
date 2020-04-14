@@ -1,0 +1,39 @@
+Dato un servizio di message passing asincrono e senza fare uso di processi server:
+    a) implementare un servizio di message passing sincrono a ricezione multipla. Questo servizio prevede due funzioni con la seguente interfaccia:
+        ms_send(pid dest, msg_t msg)
+        ms_recv(int n, pid *senders, msg_t *msgs)
+
+L'operazione di ricezione deve attendere n messaggi, provenienti dai mittenti indicati nel vettore  senders  (ogni elemento può essere ANY/*) e metterli ordinatamente nel vettore msgs (entrambi i vettori saranno stati opportunamente allocati e dimensionati dal chiamante). I processi mittenti degli n messaggi devono rimanere inattesa fino a che la ms_recv non può essere completata. 
+
+    b) analizzare i casi di deadlock che possono accadere in base alla definizione del servizio di message passing sincrono a ricezione multipla.
+
+
+def ms_send(pid dest, msg_t msg):
+    asend(dest, msg)
+    while(arecv(dest) != ACK):
+        ;
+    
+
+proposta 1:
+
+def ms_recv(int n, pid *senders, msg_t *msgs):
+    for i = 0; i < n; i++:
+        msgs[i],src[i] = arcv(senders[i])
+    for i = 0; i < n; i++:
+        asend(src[i], ACK)
+
+senders: [giovanni, ANY, giorgio]
+mittenti: giovanni, giorgio, antonio
+se ms_recv riceve ANY come giorgio, poi attende un messaggio da giorgio che non arriverà mai <-- dead?
+
+proposta 2:
+
+def ms_recv(int n, pid *senders, msg_t *msgs):
+    for i = 0; i < n; i++:
+        msgs[i],src = arcv(senders[i])
+        asend(src, ACK)
+
+senders: [giovanni, ANY, giorgio]
+
+mittenti: giovanni, giorgio, antonio
+se ms_recv riceve ANY come giorgio, poi attende un messaggio da giorgio che non arriverà mai <-- dead?

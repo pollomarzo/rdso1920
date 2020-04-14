@@ -1,0 +1,35 @@
+class semaphore {  
+    int value;  
+    int blocked = 0;  
+    binary_semaphore mutex(1);
+    Queue waiting;
+    void init(int initval) {  
+        value = initval;
+        }
+    void P() {  
+        mutex.P();  
+        if (value == 0) {
+            blocked++;
+            sem = new binary_semaphore(0)
+            waiting.enqueue(sem)
+            mutex.V();
+            sem.P();
+            blocked--;
+        }
+        value--;
+        mutex.V();
+        }
+    void V() {
+        mutex.P();
+        value++;
+        if (!waiting.empty()):
+            waiting.pop().V()
+        else:
+            mutex.V();
+            }
+        }
+
+In questa implementazione di semafori generali dati semafori ordinari:
+    a) viene usata la tecnica di passaggio del testimone (passing le batôn), spiegare come è usata e quale effetto ha.
+    b) questa implementazione non garantisce la FIFONESS di riattivazione dei processi bloccati, mostrare perché.
+    c) modificare il codice, mantenendone la struttura, per ottenere una soluzione che risolva il problema del punto 2.
