@@ -21,4 +21,6 @@
     CHIEDERE g1
     confermare g2(d)
 
+2018.09.19:
+    fatto g2, CHIEDERE b, d
 
