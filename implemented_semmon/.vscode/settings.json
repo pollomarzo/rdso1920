@@ -1,0 +1,7 @@
+{
+    "python.pythonPath": "/home/paolo/.anaconda3/bin/python",
+    "editor.detectIndentation": true,
+    "editor.insertSpaces": true,
+    "editor.tabSize": 4,
+    "editor.formatOnSave": true
+}
