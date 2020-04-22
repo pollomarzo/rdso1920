@@ -17,11 +17,14 @@
 
 2019.01.15:
     fatto c1
-    c2 DA FARE
-    CHIEDERE g1
+    c2 fatto
+    CHIEDERE g1 <-------
     confermare g2(d)
 
 2018.09.19:
     fatto g2, CHIEDERE b, d
     fatto c1
 
+summary for next:
+    proporre c1 2019.06.18
+    chiedere g2b2019.06.18 belady
