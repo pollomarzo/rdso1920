@@ -1,3 +1,7 @@
+# NOTE: Questa versione in python non risolve effettivamente l'esercizio in quanto blocca
+# tutti i processi che decidono di entrare non appena uno dei processi già all'interno
+# decide di uscire
+
 import threading
 import time
 import logging
