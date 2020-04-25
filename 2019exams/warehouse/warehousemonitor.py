@@ -5,7 +5,34 @@ import random
 from monitor import monitor, condition, entry
 from queue import Queue
 
+# NOT CHECKED. DONT WANT TO WRITE TEST FUN
 
+
+class warehouse(monitor):
+    def __init(self):
+        self.hasComponents = condition(self)
+        self.storage = []
+        self.queue = []
+
+    @entry
+    def add(self, components):
+        self.storage += components
+        if (self.queue != []) and (self.queue[0] >= self.storage):
+            self.hasComponents.signal()
+
+    @entry
+    def get(self, components):
+        self.queue.append(components)
+        if self.queue != [] or components > self.storage:
+            self.hasComponents.wait()
+        self.storage -= components
+        self.queue.pop()
+        if (self.queue != []) and (self.queue[0] >= self.storage):
+            self.hasComponents.signal()
+
+
+"""
+FIFO BY PROCESS(WRONG)
 class warehouse(monitor):
 
     def __init__(self):
@@ -42,6 +69,8 @@ class warehouse(monitor):
                     self.amountneeded[i].dequeue()
                     self.storage[i] -= amount
 
+"""
+
 
 def writer(mon, components):
     mon.add(components)
@@ -55,7 +84,7 @@ if __name__ == "__main__":
     order = ["w", "r"] * 5
     random.shuffle(order)
     print(f"Order: {order}")
-    wr = samewr()
+    wr = warehouse()
     threads = []
     nr = nw = 0
     for elem in order:

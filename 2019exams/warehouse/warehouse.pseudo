@@ -8,6 +8,27 @@ dove components è un vettore di 16 elementi: indica quanti componenti di ogni t
 deadlock no, la add non aspetta nulla quindi impossibile due processi dipendano da l'un l'altro per avverarsi di condizione
 starvation forse, ma solo a livello dello scheduler. il monitor non causa starvation.
 
+FIFO BY PROCESS(CORRECT)
+monitor warehouse:
+    condition hasComponents;
+    Component storage[16];
+    queue processes;
+    
+    entry add(components[16]):
+        storage += components // vectorial op, like all others here
+        if (queue != empty) && (queue.top().components >= storage):
+            hasComponents.signal()
+        
+    entry get(components[16]):
+        queue.add(self)
+        if queue != empty || components > storage:
+            hasComponents.wait()
+        storage -= components
+        queue.dequeue()
+        if (queue != empty) && (queue.top().components >= storage):
+            hasComponents.signal()
+
+FIFO BY COMPONENT (WRONG)
 monitor warehouse:
     int storage[16]
     queue amountneeded[16]
