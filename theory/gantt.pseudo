@@ -1,0 +1,18 @@
+2018.09.19
+Sia dato questo programma:
+    
+    Program P:
+        for (i=0;i<2;i++):
+            long_compute(5);
+            io(5);
+        }      
+        short_compute(2);
+
+long_compute() impiega 5 ms, short_compute() 2 ms e io() impiega 5 ms. Il programma usa un device condiviso gestito in modalità FIFO. Considerando in un sistema di elaborazione monoprocessore dove sono in esecuzione tre istanze del programma P che sono state attivate ai tempi 0, 4ms e 7ms e che il sistema usa uno scheduler round robin per l'accesso alla CPU disegnare il diagramma di Gannt dell'esecuzione e spiegarne i passaggi. (time slice=3 ms)
+
+0     5      8     10 11      14     16    18     20    21     23    24      25    27     29    31     33      36      38      40 
+|--A--||--B--||--C-----||--A--||--B--||--C--||--A--|****|--B---------||---C--------||--A--||--B--||--C--|*******||--B----|--C---|
+		ioA-------->endIoA             ioB    ioC    ioA endIoB  endIoC       endIoA       endA    ioB    ioC     endIoB  endIOC
+														  |______|______|__-^        |             |                  |______|_________|       |
+																    |______|____________|             |                         |_________________|
+																           |__________________________|

@@ -1,0 +1,35 @@
+//NOTE: Questo risolve effettivamente l'esercizio della SAU
+
+Una sezione-acritica-unificante (SAU) è una sequenza di istruzioni che può essere eseguita contemporaneamente da più processi, ma i processi possono uscirne solo quanto tutti i processi che stanno eseguendo la SAU ne completano l'esecuzione. Ogni processo chiama:
+    SAU_enter()   
+    ... codice SAU ...
+    SAU_exit()
+Scrivere le funzioni SAU_enter e SAU_exit mediante l'uso di semafori.
+
+class SAU:
+    def init():
+        binsem mutex(1)
+        int inside = 0; // contatore per processi dentro
+        int readyToExit = 0; // contatore per process pronti a uscire
+        sem blocked(0); // semaforo per processi bloccati in attesa di uscire
+    
+    def SAU_enter():
+        mutex.P()
+        inside++
+        mutex.V()
+        
+    def SAU_exit():
+        mutex.P()
+        readyToExit++
+        if inside != readyToExit:
+            mutex.V()
+            blocked.P()
+            readyToExit--;
+            inside--;
+            blocked.V()
+            if readyToExit == 0:
+                mutex.V()
+        else:
+            inside--;
+            readyToExit--;
+            blocked.V();
