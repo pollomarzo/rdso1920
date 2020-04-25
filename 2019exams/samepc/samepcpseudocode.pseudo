@@ -1,8 +1,9 @@
-{r1, r2, r3, r4, w1, w2, w3, w4}
-same_number.queue = {r3, r4, w1, w2, w3}
-buffer = {2, 3, 4}
-urgent = {w4, r1, r2}
-r1=1, r2=2, r3=, r4=
+the point was that the reader who balances the numbers has to have a different
+behavior from everyone else: otherwise, he takes the wrong number from the queue
+try it if you want! remove the else in get and you will encounter the incorrect 
+behavior.
+the two solutions we thought of are here. the first one, in our opinion, looks
+cleaner
 
 monitor unlimited_buffer:
     int nw = 0, nr = 0;
@@ -28,11 +29,11 @@ monitor unlimited_buffer:
         
         T val = buffer.dequeue();
 
-    same_number.signal();
+        same_number.signal();
 
-    nr--;
+        nr--;
 
-    return val;
+        return val;
 
 
 monitor unlimited_buffer:
