@@ -8,7 +8,7 @@ Scrivere le funzioni SAU_enter e SAU_exit mediante l'uso di semafori.
 
 class SAU:
     def init():
-        binsem mutex(1)
+        sem mutex(1)
         int inside = 0; // contatore per processi dentro
         int readyToExit = 0; // contatore per process pronti a uscire
         sem blocked(0); // semaforo per processi bloccati in attesa di uscire
@@ -24,12 +24,9 @@ class SAU:
         if inside != readyToExit:
             mutex.V()
             blocked.P()
-            readyToExit--;
-            inside--;
-            blocked.V()
-            if readyToExit == 0:
-                mutex.V()
+        inside--;
+        readyToExit--;
+        if readyToExit == 0:
+            mutex.V()
         else:
-            inside--;
-            readyToExit--;
             blocked.V();
