@@ -1,0 +1,22 @@
+monitor allornone:
+    condition ok2read
+    queue buffer;
+    waitingReaders = 0
+
+    entry put(val):
+        buffer.enqueue(val)
+        if waitingReaders > 0:
+            ok2read.signal()
+
+    entry get():
+        if buffer.isEmpty():
+            waitingReaders++
+            ok2read.wait()
+            waitingReaders--
+        val = buffer.head()
+        if waitingReaders == 0:
+            buffer.dequeue()
+        else:
+            ok2read.signal()
+        
+        return val

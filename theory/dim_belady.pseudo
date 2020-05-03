@@ -1,0 +1,12 @@
+S_A(M, r, t)
+per ogni M, r, t
+
+    S_A(M, r, t) e' un sottoinsieme di S_A(M+1, r, t)
+
+
+quando avviene page fault con M pagine? quando p not in S_A(M, r, t)
+quando avviene page fault con M+1  pagine? quando p not in S_A(M+1, r, t)
+
+caso 1: p in S_A(M, r, t)  ---------------------> non c'e' PF mai
+caso 2: p in S_A(M+1, r, t)-S_A(M, r, t) -------> c'e' page fault SOLO in M+1
+caso3 altrimenti           ---------------------> c'e' page fault in ogni caso
