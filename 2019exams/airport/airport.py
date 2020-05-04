@@ -3,6 +3,8 @@ import time
 import logging
 import random
 from monitor import monitor, condition, entry
+"""
+WRONG OLD NOT UPDATED DONT USE DONT CHECK ITS BAD
 
 BLQ = 0
 CDG = 1
@@ -109,18 +111,8 @@ if __name__ == "__main__":
     threads = [threading.Thread(
         name="cart", target=cart, args=(mon,), daemon=True)]
     """
-    nr = nw = 0
-    for elem in order:
-        if elem == "l":
-            threads.append(threading.Thread(
-                name=f"loading_station{nw}", target=loadingstation, args=(mon,), daemon=True))
-            nw += 1
-        elif elem == "s":
-            code = AIRPORT_CODES[random.randint(1, len(AIRPORT_CODES) - 1)]
-            threads.append(threading.Thread(
-                name=f"station{nr}", target=station, args=(mon, code), daemon=True))
-            nr += 1
-    """
+
+"""
     for airport in AIRPORT_CODES:
         if airport is BLQ:
             threads.append(threading.Thread(
@@ -135,3 +127,4 @@ if __name__ == "__main__":
 
     for t in threads:
         t.join()
+"""
