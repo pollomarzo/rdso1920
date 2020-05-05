@@ -23,6 +23,7 @@ Condizioni da rispettare: il carrello trasporta MAX valigie, alla stazione di ca
 PolloMARZO
 
 AIRPORT_CODES = [BLQ, CDG, BRX, LGW, FCO]
+VERSIONE ERRATA:
 
 class dispatch(monitor):
     def __init__(self,MAX):
@@ -72,44 +73,53 @@ class dispatch(monitor):
         if self.cart_items[dstcode] != []:
             self.waiting_to_unload[dstcode].signal() # passing the bâton
         return owner
-        
 
-    @entry
-    def cartat(self, dstcode):
-        if (dstcode == BLQ and self.n < self.MAX) or cart_items[dstcode] != []:
-            self.waiting_to_leave.wait() # aspetta finché non è pieno
-        
-        self.station = dstcode
-        
-        if self.cart_items[dstcode] != []:
-            self.waiting_to_unload[dstcode].signal()
-        elif self.station == BLQ:
-            self.n = 0
-            self.waiting_to_load.signal()
+VERSIONE maybeGIUSTA:
 
-    @entry
-    def load(self, dstcode, owner):
-        if self.n == self.MAX || self.station != BLQ:
-            self.waiting_to_load.wait() # aspetta che si liberi un posto e che il carrello torni a BLQ
-            
-        self.cart_items[dstcode].append(owner)
-        self.n += 1
-        
-        if self.n < self.MAX:
-            self.waiting_to_load.signal()
-        else: # n == MAX
-            self.waiting_to_leave.signal()
-
+monitor airport:
+    def __init__(self,MAX):
+        super().__init__()
+        self.MAX = MAX
+        self.n = 0
+        self.station = null
+        self.waiting_to_load = condition(self)
+        self.waiting_to_leave = condition(self)
+        self.cart_items = {} # dizionario: a un codice di stazione corrisponde una lista di bagagli
+        self.waiting_to_unload = {} # dizionario: a un codice di stazione corrisponde una condition variable
     
     @entry
-    def unload(self, dstcode):
-        if self.station != dstcode:
-            self.waiting_to_unload[dstcode].wait()
-            
-        owner = self.cart_items[dstcode].pop(0)
+    def cartat(dstcode):
+        if (self.station == BLQ && n < MAX) || !cart_items[dstcode].empty():
+            waiting_to_leave.wait() # aspetta finché non è pieno
         
+        station = dstcode
+        
+        if !cart_items[dstcode].empty():
+            waiting_to_unload[dstcode].signal()
+        elif station == BLQ:
+            n = 0
+            waiting_to_load.signal()
 
-        if self.cart_items[dstcode] == []:
-            self.waiting_to_leave.signal()
-        return owner
+    @entry
+    def load(dstcode, owner):
+        if n == MAX || station != BLQ:
+            waiting_to_load.wait() # aspetta che si liberi un posto e che il carrello torni a BLQ
+            
+        cart_items[dstcode].append(owner)
+        n += 1
         
+        if n < MAX:
+            waiting_to_load.signal() # se c'è solo un processo ovviamente non serve
+        else:                        # n == MAX
+            waiting_to_leave.signal()
+
+    @entry
+    def unload(self, dstcode):
+        if station != dstcode || cart_items[dstcode].empty():
+            waiting_to_unload[dstcode].wait()
+            
+        owner = cart_items[dstcode].pop(0)
+        
+        if cart_items[dstcode].empty():
+            waiting_to_leave.signal()
+        return owner
