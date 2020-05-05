@@ -37,12 +37,13 @@ class dispatch(monitor):
         
     @entry
     def cartat(self, dstcode):
+        if dstcode == BLQ and self.n < self.MAX:
+            self.waiting_to_leave.wait() # aspetta finché non è pieno
+        
         self.station = dstcode
         
-        if self.n < self.MAX:
-            self.waiting_to_leave.wait() # aspetta finché non è pieno <---
-            if self.cart_items[dstcode] != []:
-                self.waiting_to_unload[dstcode].signal()
+        if self.cart_items[dstcode] != []:
+            self.waiting_to_unload[dstcode].signal()
         elif self.station == BLQ:
             self.n = 0
             self.waiting_to_load.signal()
@@ -50,19 +51,24 @@ class dispatch(monitor):
     @entry
     def load(self, dstcode, owner):
         if self.n == self.MAX || self.station != BLQ:
-            self.waiting_to_load.wait() # aspetta che si liberi un posto e che il carrello torni a loading_station
+            self.waiting_to_load.wait() # aspetta che si liberi un posto e che il carrello torni a BLQ
+            
         self.cart_items[dstcode].append(owner)
         self.n += 1
-        self.waiting_to_load.signal()
-        if self.n == self.MAX:
+        
+        if self.n < self.MAX:
+            self.waiting_to_load.signal()
+        else: # n == MAX
             self.waiting_to_leave.signal()
 
     
     @entry
     def unload(self, dstcode):
         if self.station != dstcode:
-            self.waiting_to_unload[dstcode].wait() <---
+            self.waiting_to_unload[dstcode].wait()
+            
         owner = self.cart_items[dstcode].pop(0)
+        
         if self.cart_items[dstcode] != []:
             self.waiting_to_unload[dstcode].signal() # passing the bâton
         return owner
