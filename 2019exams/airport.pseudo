@@ -1,80 +1,24 @@
-Scrivere il monitor di controllo per lo smistamento delle valigie all'aeroporto di Bologna. Un carrello viaggia su un binario circolare. Il carrello si ferma ad una postazione dove vengono caricate le valigie e quindi in corrispondenza a più postazioni dove vengono scaricate le valigie.
-Esiste una postazione corrispondente ad ogni aeroporto di destinazione. Alla postazione di caricamento un addetto scansiona dal codice a barre l'aeroporto di destinazione e il nome del proprietario della valigia. Il codice dei processi coinvolti nel problema è il seguente:
-
+Scrivere il monitor di controllo per lo smistamento delle valigie all'aeroporto di Bologna. Un carrello viaggia su un binario circolare. Il carrello si ferma ad una postazione dove vengono caricate le valigie e quindi in corrispondenza a più postazioni dove vengono scaricate le valigie. Esiste una postazione corrispondente ad ogni aeroporto di destinazione. Alla postazione di caricamento un addetto scansiona dal codice a barre l'aeroporto di destinazione e il nome del proprietario della valigia. Il codice dei processi coinvolti nel problema è il seguente:
     int airport_codes = [BLQ, CDG, BRX, LGW, FCO, ....]
-    
     ## l'elemento 0, BLQ (codice di Bologna) corrisponde alla stazione di caricamento
-    process cart:
-        while True:
-            for code in airport_codes:
-                dispatch.cartat(code)    # il carrello è alla postazione code
-                
-    process loadingstation:
-        while True:
-            dstcode, owner = read_barcode()
-            dispatch.load(dstcode, owner) # carica la valigia del viaggiatore owner diretto a dstcode
-            
-    process station, for dstcode in airport_codes[1:]: # C'è un processo stazione in ciascuna destinazione (tranne BLQ)
-        while True:
-            owner = dispatch.unload(dstcode) #scarica dal carrello la valigia dell'utente owner
-            process_luggage(ownder, dstcode)
-
-Condizioni da rispettare: il carrello trasporta MAX valigie, alla stazione di caricamento il carrello si ferma fino al riempimento completo del carrello, alle altre stazioni deve sostare fino a quando tutte le valigie per la destinazione sono state scaricate.
-PolloMARZO
-
-AIRPORT_CODES = [BLQ, CDG, BRX, LGW, FCO]
-VERSIONE ERRATA:
-
-class dispatch(monitor):
-    def __init__(self,MAX):
-        super().__init__()
-        self.MAX = MAX
-        self.n = 0
-        self.station = BLQ
-        self.waiting_to_load = condition(self)
-        self.waiting_to_leave = condition(self)
-        self.cart_items = {} # dizionario: a un codice di stazione corrisponde una lista di bagagli
-        self.waiting_to_unload = {} # dizionario: a un codice di stazione corrisponde una condition variable
-        
-    @entry
-    def cartat(self, dstcode):
-        if dstcode == BLQ and self.n < self.MAX:
-            self.waiting_to_leave.wait() # aspetta finché non è pieno
-        
-        self.station = dstcode
-        
-        if self.cart_items[dstcode] != []:
-            self.waiting_to_unload[dstcode].signal()
-        elif self.station == BLQ:
-            self.n = 0
-            self.waiting_to_load.signal()
-
-    @entry
-    def load(self, dstcode, owner):
-        if self.n == self.MAX || self.station != BLQ:
-            self.waiting_to_load.wait() # aspetta che si liberi un posto e che il carrello torni a BLQ
-            
-        self.cart_items[dstcode].append(owner)
-        self.n += 1
-        
-        if self.n < self.MAX:
-            self.waiting_to_load.signal()
-        else: # n == MAX
-            self.waiting_to_leave.signal()
-
+    cart: 
+        process:
+            while True:    
+                for code in airport_codes:
+                    dispatch.cartat(code)    # il carrello è alla postazione code
     
-    @entry
-    def unload(self, dstcode):
-        if self.station != dstcode:
-            self.waiting_to_unload[dstcode].wait()
-            
-        owner = self.cart_items[dstcode].pop(0)
-        
-        if self.cart_items[dstcode] != []:
-            self.waiting_to_unload[dstcode].signal() # passing the bâton
-        return owner
-
-VERSIONE maybeGIUSTA:
+    loadingstation: 
+        process:
+            while True:
+                dstcode,owner = read_barcode()
+                dispatch.load(dstcode, owner) #carica la valigia del viaggiatore owner diretto a dstcode
+                
+    station, for dstcode in airport_codes[1:]:
+        process:
+            while True:
+                owner = dispatch.unload(dstcode) #scarica dal carrello la valigia dell'utente owner
+                process_luggage(owner, dstcode)
+Condizioni da rispettare: il carrello trasporta MAX valigie, alla stazione di caricamento il carrello si ferma fino al riempimento completo del carrello, alle altre stazioni deve sostare fino a quando tutte le valigie per la destinazione sono state scaricate.
 
 monitor airport:
     def __init__(self,MAX):
