@@ -3,7 +3,11 @@ mulsend(dest, msg, times):
     for i in times:
         asend(dest, (self, msg, times))
 
-    arecv(ACK, dest)
+    while(1):
+        (src, msg, times) = arecv(ANY)
+        if (msg == ACK):
+            break
+        datastruct[src].decrement_or_add(msg, times)
 
 mulrecv(sender):
     asend(self, (self, TAG, 0))

@@ -1,7 +1,7 @@
 Sia dato un servizio di message passing asincrono. Senza fare uso di processi server implementare un servizio di message passing parzialmente sincrono (nel quale l'operazione  pssend  blocchi il chiamante fino ad avvenuta ricezione del messaggio e la operazione psreceive non sia bloccante, quindi deve ritornare immediatamente "None" se non è stato ricevuto alcun messaggio corrispondente alle richieste).
 
 def pssend(message, destination):
-    asend((self(),message),destination)
+    asend(destination, (self(),message))
     while(1):
         snd, message = arecv(ANY)
         if(message == ACK):
