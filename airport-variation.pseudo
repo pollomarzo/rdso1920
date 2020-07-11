@@ -1,0 +1,33 @@
+enum StationCode { BLQ, CDG, BRX, LGW, FCO, ... }
+
+monitor dispatch:
+    StationCode station;
+    condition ok2load;
+    condtion blockedAt[StationCode.length]
+    condtion cartCanMove;
+    int loaded = 0;
+    dict<StationCode, queue> luggages;
+    
+    procedure entry cartat(code):
+        station = code
+        if (code == BLQ && loaded < MAX):
+            ok2load.signal()
+        if (code != BLQ && !luggages[code].empty()):
+            
+        
+    procedure entry unload(dstcode):
+        if station != dstcode || luggages[dstcode].empty():
+            ok2unload[dstcode].wait()
+        loaded--
+        owner = luggages[dstcode].pop()
+        if luggages[dstcode].empty():
+            cartCanMove.signal()
+        return owner
+        
+    procedure entry load(dstcode, owner):
+        if station != BLQ || loaded == MAX:
+            ok2load.wait();
+        loaded++;
+        luggages[dstcode].append(owner)
+        if loaded == MAX:
+            cartCanMove.signal();

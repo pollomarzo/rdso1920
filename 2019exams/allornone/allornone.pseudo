@@ -1,12 +1,17 @@
 monitor allornone:
     condition ok2read
+    condition ok2write
     queue buffer;
     waitingReaders = 0
+    waitingWriters = 0
 
     entry put(val):
         buffer.enqueue(val)
-        if waitingReaders > 0:
-            ok2read.signal()
+        if waitingReaders == 0 || waitingWriters > 0:
+            waitingWriters++
+            ok2write.wait()
+            waitingWriters--
+        ok2read.signal()
 
     entry get():
         if buffer.isEmpty():
@@ -16,6 +21,8 @@ monitor allornone:
         val = buffer.head()
         if waitingReaders == 0:
             buffer.dequeue()
+            if waitingWriters > 0:
+                ok2write.signal()
         else:
             ok2read.signal()
         
