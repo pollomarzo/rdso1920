@@ -1,3 +1,4 @@
+
 mulsend(dest, msg, times):
     for i in times:
         asend(dest, (self, msg, times))
@@ -8,21 +9,21 @@ mulrecv(sender):
     asend(self, (self, TAG, 0))
     while (1):
         (src, msg, times) = arecv(ANY)
-	if msg == TAG:
-	    break
-	datastruct[src].decrement_or_add(msg, times) // adds a new message with the number of times that should be received or decrement the number of copies that last
+        if msg == TAG:
+            break
+        datastruct[src].decrement_or_add(msg, times) // adds a new message with the number of times that should be received or decrement the number of copies that last
 
     while (datastruct[sender].count != 0)
-	(src, msg, times) = arecv(ANY)
-	datastruct[src].decrement_or_add(msg, times)
+        (src, msg, times) = arecv(ANY)
+        datastruct[src].decrement_or_add(msg, times)
 
     asend(sender, (self, ACK, 0))
     return datastruct[sender].pop()
 
 mulrecv(sender):
-    (src, msg, times) = arecv(sender)	
+    (src, msg, times) = arecv(sender)
     for _ in times:
-	arecv(src)
+	    arecv(src)
     
     asend(self, (self, ACK, 0))
     return msg
