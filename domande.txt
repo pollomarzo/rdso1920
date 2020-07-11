@@ -1,0 +1,6 @@
+1) Perché una system call non può essere implementata come una normale chiamata di funzione ad un indirizzo del kernel?
+2) Dato un sistema monoprocessore che elabora dati in modo batch, cosa cambia se si usa uno scheduler round-robinal posto di uno FIFO?
+3) in quali casi anche utilizzando file system con supporto di journaling si possono perdere informazioni?
+4) In quali casi è bene non usare la memoria virtuale?
+5) Come si calcola la lunghezza massima di un file che si può memorizzare su un file system di tipo fat? / Come si calcola la lunghezza massima di un file che si può memorizzare su un file system di tipo ext2?
+6) la ricostruzione della coerenza mediante tecnica di journaling risolve solo alcuni tipi di incoerenze, quali non vengono gestite?
